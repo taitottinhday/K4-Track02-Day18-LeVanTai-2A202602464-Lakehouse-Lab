@@ -374,6 +374,17 @@ and the lifecycle is enforced by the table itself.
 """)
 
 # %% [markdown]
+# ## Diễn giải kết quả trên máy này
+#
+# Đọc ngẫu nhiên một inline blob phải đọc cả Parquet row group, tạo amplification
+# **200×** so với một object pointer; ngược lại analytical projection vẫn hưởng
+# column pruning. Embedding int8 nhỏ hơn **5.8×** trên disk, với recall@10
+# **0.904** và topic fidelity **1.000**, nên mất một số exact IDs nhưng không đổi
+# chủ đề top results trong corpus này. Sau erasure, lakehouse có **0** hit nhưng
+# external index stale còn **8**; CDF ghi 8 delete events. Vì thế index ngoài chỉ
+# là derived index và phải consume cả delete, không chỉ upsert.
+#
+# %% [markdown]
 # ## ✅ NB7 pass criteria
 #
 # | Check | Target |

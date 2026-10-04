@@ -150,6 +150,16 @@ assert n_dates >= 7, (
 )
 
 # %% [markdown]
+# ## Diễn giải kết quả trên máy này
+#
+# Bronze giữ **200,000** event raw. Silver còn **190,052** dòng, tức đã loại
+# **9,948** duplicate theo `request_id` sau parse/validation; raw không bị sửa
+# để vẫn có thể audit lại ingestion. Gold có **24** nhóm `(date, model)` = 8
+# ngày × 3 model, nên dashboard có đủ p50/p95, `cost_usd` và `error_rate` cho
+# từng model/ngày. Điều này tách câu hỏi phục vụ (Gold) khỏi dữ liệu có khả năng
+# lỗi/trùng lặp (Bronze) và lớp chuẩn hoá (Silver).
+#
+# %% [markdown]
 # ## ✅ Deliverable check
 # - [ ] All three tables exist under `_lakehouse/{bronze,silver,gold}/`
 # - [ ] Silver has fewer rows than Bronze (dedup worked)

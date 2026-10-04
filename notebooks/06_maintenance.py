@@ -412,6 +412,18 @@ print("it is driven by FILE COUNT, not data volume. Fixing your writer's")
 print("trigger interval is cheaper than paying someone to clean up after it.")
 
 # %% [markdown]
+# ## Diễn giải kết quả trên máy này
+#
+# Compaction giảm **200 → 11 files (18×)**; clustering làm point query bỏ qua
+# **90%** files nhờ min/max stats. Delta vacuum sau đó còn 10 active files và
+# checkpoint `000...099.checkpoint.parquet` cùng `_last_checkpoint`, nên cold
+# reader không phải replay toàn bộ 200 JSON commits. Ba Delta orphan được tìm và
+# xoá bằng directory diff; kết quả cũng cho thấy vacuum của engine này không tự
+# nhìn thấy uncommitted orphan. Với Iceberg, expiry giảm snapshots **20 → 3**
+# nhưng physical manifest chỉ giảm sau sweep (thu hồi 36.8 KB): bỏ tham chiếu và
+# xóa vật lý là hai job khác nhau.
+#
+# %% [markdown]
 # ## ✅ NB6 pass criteria
 #
 # | Check | Target |

@@ -115,6 +115,16 @@ for h in final_history:
 print(f"\nTotal versions: {len(final_history)}  (target ≥ 5)")
 
 # %% [markdown]
+# ## Diễn giải kết quả trên máy này
+#
+# MERGE xử lý 100,000 source rows trong **0.10 s**, gồm 50,000 update và 50,000
+# insert. Sau khi cố tình thêm score âm, `RESTORE → v2` mất **0.01 s** và tạo
+# transaction `v4`; lịch sử vẫn có 5 versions, gồm cả MERGE và RESTORE. Vì vậy
+# rollback không xóa audit history: nó công bố một current state mới. Query hiện
+# tại trả `score < 0 = 0`, là kiểm tra dữ liệu lỗi đã thực sự không còn trong
+# version hiện hành.
+#
+# %% [markdown]
 # ## ✅ Deliverable check
 # - [ ] history() shows ≥ 5 versions (incl. RESTORE itself)
 # - [ ] MERGE 100K finished in < 60s (likely < 1s on lightweight path)

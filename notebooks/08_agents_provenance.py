@@ -450,6 +450,17 @@ physical files. Retention and VACUUM must be considered separately (NB6),
 as must any copies or derived artifacts outside this table.""")
 
 # %% [markdown]
+# ## Diễn giải kết quả trên máy này
+#
+# Silver có **1,578** trajectory steps và được partition theo hai `agent_version`;
+# replay snapshot pinned `v0` trả đúng 1,578 steps của run. Trong mô phỏng MCP,
+# 5 lượt `list_tables` chỉ gây **1** catalog read, còn destructive request trả
+# `input_required` trước approval và task poll kết thúc `completed`. Bốn bucket
+# provenance đều tồn tại nhưng **334** `UNCLASSIFIED` rows bị loại khỏi trainable
+# set. Erasure `user_007` giảm 8 → 0 rows ở current version; đây chứng minh trạng
+# thái hiện hành, không tự động xoá history/backups/indexes hay chứng nhận pháp lý.
+#
+# %% [markdown]
 # ## ✅ NB8 pass criteria
 #
 # | Check | Target |

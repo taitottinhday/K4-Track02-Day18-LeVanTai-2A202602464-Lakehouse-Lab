@@ -278,6 +278,18 @@ print(f"Total rows readable across BOTH specs: {tbl.scan().to_arrow().num_rows:,
 print("\nTwo layouts, one table, zero rewrites. This is the feature.")
 
 # %% [markdown]
+# ## Diễn giải kết quả trên máy này
+#
+# Bảng được tạo qua SQLite catalog với transform `day(ts)`, không phải cột
+# `ts_day` do người dùng tự quản. Lọc trên cột thật `ts` chọn 1 thay vì 10 files,
+# nên hidden-partition pruning đạt **10×**. Metadata chiếm **282.8%** data trong
+# toy table vì mỗi file chỉ có 10 rows — một minh hoạ trực tiếp cho chi phí small
+# files, không phải tỷ lệ production mong muốn. Rename `latency_ms` sang
+# `latency_millis` vẫn giữ `field_id=4`; đồng thời spec IDs `[1, 2]` cùng đọc
+# được, cho thấy schema/partition evolution là metadata operation, không rewrite
+# toàn table.
+#
+# %% [markdown]
 # ## ✅ NB5 pass criteria
 #
 # | Check | Target |

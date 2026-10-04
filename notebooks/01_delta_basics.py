@@ -87,6 +87,17 @@ tier_counts = con.sql("SELECT tier, count(*) AS n FROM users GROUP BY 1 ORDER BY
 print(tier_counts)
 
 # %% [markdown]
+# ## Diễn giải kết quả trên máy này
+#
+# Lần ghi đầu tạo 3 dòng và commit `v0` trong `_delta_log/`. Khi cố ghi
+# `age='thirty'`, delta-rs trả `Cast error ... Int64`: kiểu cột được giữ nguyên,
+# nên đây là schema **enforcement** chứ không phải dữ liệu tự bị ép sang chuỗi.
+# Chỉ sau khi chọn rõ `schema_mode="merge"`, schema mới có thêm `tier`; dữ liệu
+# cũ vẫn đọc được với `tier=NULL`, còn dòng mới có `tier='premium'`. DuckDB thấy
+# đúng hai nhóm `premium=1` và `NULL=3`, xác nhận evolution không rewrite sai
+# bốn bản ghi.
+#
+# %% [markdown]
 # ## ✅ Deliverable check
 # - [ ] `_delta_log/` contains JSON files
 # - [ ] Schema enforcement blocked the bad write
